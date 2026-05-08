@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/YasserHage/calc-cli/calc"
+	"github.com/YasserHage/calc-cli/calculator"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,7 @@ Examples:
 The expression should be passed as a quoted string
 to prevent the shell from interpreting special characters.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		r, err := calc.Calculate(args[0])
+		r, err := calculator.Calculate(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}

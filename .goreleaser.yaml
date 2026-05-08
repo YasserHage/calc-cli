@@ -1,0 +1,13 @@
+version: 1
+
+project_name: calc-cli
+builds:
+  - env: [CGO_ENABLED=0]
+    binary: calc
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
