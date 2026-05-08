@@ -23,7 +23,7 @@ func Calculate(expression string) (float64, error) {
 
 		if curr == ')' {
 			if parentheses == 0 {
-				return 0, errors.New("expression is not valid: unmatched parentheses.")
+				return 0, errors.New("expression is not valid: unmatched parentheses")
 			}
 			parentheses = parentheses - 1
 		}
