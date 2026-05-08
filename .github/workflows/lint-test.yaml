@@ -1,13 +1,7 @@
-name: Release
+name: Lint And Test
 
 on:
-  push:
-    tags:
-      - "*"
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   lint:
@@ -52,29 +46,3 @@ jobs:
 
       - name: Run Tests with Coverage
         run:  go test ./... -v
-
-  release:
-    needs:
-      - test
-      - lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v7
-        with:
-          distribution: goreleaser
-          version: "~> v2"
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
