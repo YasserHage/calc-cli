@@ -23,7 +23,7 @@ func Calculate(expression string) (float64, error) {
 
 		if curr == ')' {
 			if parentheses == 0 {
-				return 0, errors.New("Expression is not valid. Unmatched parentheses.")
+				return 0, errors.New("expression is not valid: unmatched parentheses.")
 			}
 			parentheses = parentheses - 1
 		}
@@ -46,7 +46,7 @@ func Calculate(expression string) (float64, error) {
 			if slices.Contains(validOperators, curr) {
 				operators = append(operators, curr)
 			} else {
-				return 0, fmt.Errorf("expression is not valid. invalid character: %c at position %d", curr, r)
+				return 0, fmt.Errorf("expression is not valid: invalid character '%c' at position '%d'", curr, r)
 			}
 			l = r + 1
 		}
@@ -54,7 +54,7 @@ func Calculate(expression string) (float64, error) {
 	}
 
 	if parentheses != 0 {
-		return 0, errors.New("Expression is not valid. Unmatched parentheses.")
+		return 0, errors.New("expression is not valid: unmatched parentheses")
 	}
 
 	n, err := getNumber(expression, l, r)
@@ -63,7 +63,7 @@ func Calculate(expression string) (float64, error) {
 	}
 	numbers = append(numbers, n)
 	numbers, operators = multiplyDivide(numbers, operators)
-	numbers, operators = addSub(numbers, operators)
+	addSub(numbers, operators)
 	return numbers[0], nil
 }
 
@@ -73,7 +73,7 @@ func getNumber(expression string, l int, r int) (float64, error) {
 	}
 	result, err := strconv.ParseFloat(expression[l:r], 64)
 	if err != nil {
-		return 0, fmt.Errorf("Invalid number: %s", expression[l:r])
+		return 0, fmt.Errorf("invalid number: %s", expression[l:r])
 	}
 	return result, nil
 }
@@ -105,7 +105,7 @@ func multiplyDivide(numbers []float64, operators []rune) ([]float64, []rune) {
 	return numbers, operators
 }
 
-func addSub(numbers []float64, operators []rune) ([]float64, []rune) {
+func addSub(numbers []float64, operators []rune) {
 	for i := 0; i < len(operators); i++ {
 		o := operators[i]
 
@@ -129,5 +129,4 @@ func addSub(numbers []float64, operators []rune) ([]float64, []rune) {
 			continue
 		}
 	}
-	return numbers, operators
 }
