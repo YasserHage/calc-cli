@@ -1,6 +1,14 @@
 version: 2
-
 project_name: calc-cli
+
+archives:
+  - formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+
 builds:
   - env: [CGO_ENABLED=0]
     binary: calc
