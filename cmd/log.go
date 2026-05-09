@@ -28,24 +28,33 @@ Examples:
 - The logarithm base must also be greater than zero and cannot be equal to 1`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		n, err := strconv.ParseFloat(args[0], 64)
-		if n <= 0 {
-			return errors.New("number must be greater than 0")
-		}
 		if err != nil {
 			return err
 		}
 
 		b, err := cmd.Flags().GetFloat64("base")
-		if b <= 0 || b == 1 {
-			return errors.New("base should be greater than 0 and different than 1")
-		}
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(math.Log(n) / math.Log(b))
+		r, err := Calculate(n, b)
+		if err != nil {
+			return err
+		}
+		fmt.Println(r)
 		return nil
 	},
+}
+
+func Calculate(n float64, b float64) (float64, error) {
+	if n <= 0 {
+		return 0, errors.New("number must be greater than 0")
+	}
+	if b <= 0 || b == 1 {
+		return 0, errors.New("base should be greater than 0 and different than 1")
+	}
+
+	return (math.Log(n) / math.Log(b)), nil
 }
 
 func init() {
