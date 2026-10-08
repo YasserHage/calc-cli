@@ -10,9 +10,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "calc expression",
-	Args:  cobra.ExactArgs(1),
-	Short: "Evaluate mathematical expressions from the command line",
+	Use:                "calc expression",
+	Args:               cobra.ExactArgs(1),
+	DisableFlagParsing: true,
+	Short:              "Evaluate mathematical expressions from the command line",
 	Long: `Calc is a simple command-line calculator written in Go.
 
 It supports:
@@ -30,6 +31,11 @@ Examples:
 The expression should be passed as a quoted string
 to prevent the shell from interpreting special characters.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if isHelp(args) {
+			_ = cmd.Help()
+			return
+		}
+
 		r, err := calculator.Calculate(args[0])
 		if err != nil {
 			log.Fatal(err)
@@ -37,6 +43,10 @@ to prevent the shell from interpreting special characters.`,
 
 		fmt.Println(r)
 	},
+}
+
+func isHelp(args []string) bool {
+	return len(args) == 1 && (args[0] == "-h" || args[0] == "--help")
 }
 
 func Execute() {

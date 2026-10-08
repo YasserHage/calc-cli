@@ -11,6 +11,7 @@ import (
 
 var logCmd = &cobra.Command{
 	Use:   "log number",
+	Args:  cobra.ExactArgs(1),
 	Short: "Calculate the logarithm of a number",
 	Long: `Calculate logarithms using base 10, the natural logarithm, or a custom base.
 

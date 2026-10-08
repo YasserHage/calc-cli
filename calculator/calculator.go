@@ -17,6 +17,9 @@ func Calculate(expression string) (float64, error) {
 	validDigits := []rune{'.', '(', ')'}
 	parentheses := 0
 	expression = strings.ReplaceAll(expression, " ", "")
+	if expression == "" {
+		return 0, errors.New("expression is not valid: expression is empty")
+	}
 
 	for r < len(expression) {
 		curr := rune(expression[r])
@@ -37,17 +40,20 @@ func Calculate(expression string) (float64, error) {
 				r = r + 1
 				continue
 			}
+			if (curr == '-' || curr == '+') && l == r {
+				r = r + 1
+				continue
+			}
+			if !slices.Contains(validOperators, curr) {
+				return 0, fmt.Errorf("expression is not valid: invalid character '%c' at position %d", curr, r+1)
+			}
 			n, err := getNumber(expression, l, r)
 			if err != nil {
 				return 0, err
 			}
 
 			numbers = append(numbers, n)
-			if slices.Contains(validOperators, curr) {
-				operators = append(operators, curr)
-			} else {
-				return 0, fmt.Errorf("expression is not valid: invalid character '%c' at position '%d'", curr, r)
-			}
+			operators = append(operators, curr)
 			l = r + 1
 		}
 		r = r + 1
@@ -62,12 +68,28 @@ func Calculate(expression string) (float64, error) {
 		return 0, err
 	}
 	numbers = append(numbers, n)
-	numbers, operators = multiplyDivide(numbers, operators)
+	numbers, operators, err = multiplyDivide(numbers, operators)
+	if err != nil {
+		return 0, err
+	}
 	addSub(numbers, operators)
 	return numbers[0], nil
 }
 
 func getNumber(expression string, l int, r int) (float64, error) {
+	if l >= r {
+		if r >= len(expression) {
+			return 0, errors.New("expression is not valid: unexpected end of expression")
+		}
+		return 0, fmt.Errorf("expression is not valid: invalid character '%c' at position %d", expression[r], r+1)
+	}
+	if expression[l] == '-' || expression[l] == '+' {
+		n, err := getNumber(expression, l+1, r)
+		if expression[l] == '-' {
+			n = -n
+		}
+		return n, err
+	}
 	if expression[l] == '(' && expression[r-1] == ')' {
 		return Calculate(expression[l+1 : r-1])
 	}
@@ -78,7 +100,7 @@ func getNumber(expression string, l int, r int) (float64, error) {
 	return result, nil
 }
 
-func multiplyDivide(numbers []float64, operators []rune) ([]float64, []rune) {
+func multiplyDivide(numbers []float64, operators []rune) ([]float64, []rune, error) {
 	for i := 0; i < len(operators); i++ {
 		o := operators[i]
 
@@ -93,6 +115,9 @@ func multiplyDivide(numbers []float64, operators []rune) ([]float64, []rune) {
 		}
 
 		if o == '/' {
+			if numbers[i+1] == 0 {
+				return nil, nil, errors.New("division by zero")
+			}
 			numbers[i] = numbers[i] / numbers[i+1]
 
 			numbers = append(numbers[:i+1], numbers[i+2:]...)
@@ -102,7 +127,7 @@ func multiplyDivide(numbers []float64, operators []rune) ([]float64, []rune) {
 			continue
 		}
 	}
-	return numbers, operators
+	return numbers, operators, nil
 }
 
 func addSub(numbers []float64, operators []rune) {

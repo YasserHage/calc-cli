@@ -10,8 +10,10 @@ import (
 )
 
 var sqrtCmd = &cobra.Command{
-	Use:   "sqrt number",
-	Short: "Calculate the square root of a number",
+	Use:                "sqrt number",
+	Args:               cobra.ExactArgs(1),
+	DisableFlagParsing: true,
+	Short:              "Calculate the square root of a number",
 	Long: `Calculate the square root of a positive number.
 
 The sqrt command returns the non-negative square root
@@ -27,6 +29,10 @@ Results are returned as floating point numbers when necessary.
 
 The input number must be greater than or equal to zero.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if isHelp(args) {
+			return cmd.Help()
+		}
+
 		s, err := Sqrt(args[0])
 		if err != nil {
 			return err
